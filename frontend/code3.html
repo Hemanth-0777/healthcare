@@ -5,43 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HealthCare Connect - Comprehensive Healthcare System</title>
-    <style>
-        /* Start Page Styles */
-        .start-page {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            font-family: 'Poppins', sans-serif;
-            color: white;
-        }
-
-        .start-page h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-        }
-
-        .start-btn {
-            background-color: white;
-            color: #764ba2;
-            border: none;
-            padding: 12px 28px;
-            font-size: 1.2rem;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .start-btn:hover {
-            background-color: #f1f1f1;
-            transform: scale(1.05);
-        }
-
-        /* Main App Styles */
+  <style>
         body {
             box-sizing: border-box;
             margin: 0;
@@ -49,7 +13,9 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100%;
-        }        html {
+        }
+
+        html {
             height: 100%;
         }
 
@@ -323,14 +289,7 @@
   <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
  </head>
  <body><!-- Login/Signup Section -->
-  <!-- Start Page -->
-  <div id="startPage" class="start-page">
-    <h1>HEALTH CARE</h1>
-    <button class="start-btn" onclick="startApplication()">Let's Start</button>
-  </div>
-
-  <!-- Auth Section -->
-  <div id="authSection" class="auth-container" style="display: none;">
+  <div id="authSection" class="auth-container">
    <div class="auth-card">
     <div id="loginForm">
      <h2>Login to HealthCare Connect</h2>
@@ -745,12 +704,6 @@
         // Authentication state
         let currentUser = null;
 
-        // Start application function
-        function startApplication() {
-            document.getElementById('startPage').style.display = 'none';
-            document.getElementById('authSection').style.display = 'flex';
-        }
-
         // Show signup form
         function showSignup() {
             document.getElementById('loginForm').style.display = 'none';
@@ -764,44 +717,30 @@
         }
 
         // Handle login
-        document.getElementById('loginFormElement').addEventListener('submit', async function(e) {
+        document.getElementById('loginFormElement').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
             if (email && password) {
-                try {
-                    const response = await fetch('/backend/verify_patient.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ email, password })
-                    });
-
-                    const data = await response.json();
-                    
-                    if (data.status === 'success') {
-                        currentUser = data.user;
-                        
-                        // Show main application
-                        document.getElementById('authSection').style.display = 'none';
-                        document.getElementById('mainApp').style.display = 'block';
-                        
-                        // Update welcome message
-                        document.getElementById('welcomeUser').textContent = `Welcome, ${currentUser.name}!`;
-                    } else {
-                        throw new Error(data.message);
-                    }
-                } catch (error) {
-                    alert('Login failed: ' + error.message);
-                }
+                // Simulate successful login
+                currentUser = {
+                    name: email.split('@')[0],
+                    email: email
+                };
+                
+                // Show main application
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                
+                // Update welcome message
+                document.getElementById('welcomeUser').textContent = `Welcome, ${currentUser.name}!`;
             }
         });
 
         // Handle signup
-        document.getElementById('signupFormElement').addEventListener('submit', async function(e) {
+        document.getElementById('signupFormElement').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const name = document.getElementById('signupName').value;
@@ -810,32 +749,19 @@
             const phone = document.getElementById('signupPhone').value;
             
             if (name && email && password && phone) {
-                try {
-                    const response = await fetch('/backend/signup.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ name, email, password, phone })
-                    });
-
-                    const data = await response.json();
-                    
-                    if (data.status === 'success') {
-                        currentUser = data.user;
-                        
-                        // Show main application
-                        document.getElementById('authSection').style.display = 'none';
-                        document.getElementById('mainApp').style.display = 'block';
-                        
-                        // Update welcome message
-                        document.getElementById('welcomeUser').textContent = `Welcome, ${currentUser.name}!`;
-                    } else {
-                        throw new Error(data.message);
-                    }
-                } catch (error) {
-                    alert('Signup failed: ' + error.message);
-                }
+                // Simulate successful signup and auto-login
+                currentUser = {
+                    name: name,
+                    email: email,
+                    phone: phone
+                };
+                
+                // Show main application
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                
+                // Update welcome message
+                document.getElementById('welcomeUser').textContent = `Welcome, ${currentUser.name}!`;
             }
         });
 
@@ -843,8 +769,7 @@
         function logout() {
             currentUser = null;
             document.getElementById('mainApp').style.display = 'none';
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('startPage').style.display = 'flex';
+            document.getElementById('authSection').style.display = 'flex';
             
             // Reset forms
             document.getElementById('loginFormElement').reset();
