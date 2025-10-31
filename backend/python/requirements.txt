@@ -1,9 +1,2 @@
-
-=======
-pip freeze > requirements.txt
-
-Flask
-gunicorn
-
->>>>>>> 6112407a272886b2d37872ff9b817803ac6057de
-
+flask
+flask-cors
