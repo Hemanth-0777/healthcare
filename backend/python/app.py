@@ -1,20 +1,17 @@
 from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app)  # Allow frontend to access backend
 
-@app.route('/')
-def home():
-    return jsonify({"message": "Welcome to SkillBridge backend!"})
-
-@app.route('/predict', methods=['POST'])
-def predict():
-    data = request.get_json()
-    # Example: process input and return dummy prediction
-    user_input = data.get("skills", [])
-    prediction = {"career_path": "AI Engineer"}  # Replace with real logic
-    return jsonify(prediction)
+@app.route('/api/greet', methods=['GET'])
+def greet():
+    name = request.args.get('name', 'World')
+    return jsonify({'message': f'Hello, {name}!'})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
 
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
