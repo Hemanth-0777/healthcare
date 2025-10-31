@@ -1,4 +1,21 @@
 from flask import Flask, request, jsonify, send_from_directory
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return jsonify({"message": "Welcome to SkillBridge backend!"})
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = request.get_json()
+    # Example: process input and return dummy prediction
+    user_input = data.get("skills", [])
+    prediction = {"career_path": "AI Engineer"}  # Replace with real logic
+    return jsonify(prediction)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
