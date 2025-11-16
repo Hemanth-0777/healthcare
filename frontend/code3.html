@@ -1,4 +1,18 @@
 <!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask Frontend</title>
+    <script src="/static/script.js"></script>
+</head>
+<body>
+    <h1>Hello from Flask!</h1>
+    <input type="text" id="inputBox" />
+    <button onclick="sendData()">Send</button>
+    <p id="response"></p>
+</body>
+</html>
+
 <!doctype html>
 <html lang="en">
  <head>
@@ -701,7 +715,19 @@
    </div>
   </div>
   <script>
-   
+  function sendData() {
+    const input = document.getElementById('inputBox').value;
+    fetch('/api/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: input })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('response').innerText = data.response;
+    });
+}
+
         // Authentication state
         let currentUser = null;
 
@@ -865,4 +891,126 @@
         }
     </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99714a4456fb447e',t:'MTc2MTg5NDE4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>
+function updateMedicalRecords(email) {
+    fetch(`/api/medical-records/${email}`)
+        .then(response => response.json())
+        .then(data => {
+            const recordsContainer = document.getElementById('medical-records-list');
+            if (recordsContainer && data.records) {
+                recordsContainer.innerHTML = data.records.map(record => 
+                    `<div class="record-item" style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        <strong>${record.type} - ${record.date}</strong><br>
+                        ${record.description}<br>
+                        <small>Doctor: ${record.doctor}</small>
+                    </div>`
+                ).join('');
+            }
+        })
+        .catch(error => console.error('Error fetching medical records:', error));
+}
+
+// Function to schedule appointment via API
+function scheduleAppointment(type, date) {
+    fetch('/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: type, date: date })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Appointment scheduled successfully! ID: ${data.appointment.id}`);
+        } else {
+            alert('Failed to schedule appointment. Please try again.');
+        }
+    })
+    .catch(error => console.error('Error scheduling appointment:', error));
+}
+
+// Function to get emergency contacts
+function loadEmergencyContacts() {
+    fetch('/api/emergency-contacts')
+        .then(response => response.json())
+        .then(data => {
+            const contactsContainer = document.getElementById('emergency-contacts');
+            if (contactsContainer && data.contacts) {
+                contactsContainer.innerHTML = data.contacts.map(contact => 
+                    `<div class="contact-item" style="margin-bottom: 10px;">
+                        <strong>${contact.name}:</strong> <a href="tel:${contact.number}" style="color: #007bff;">${contact.number}</a>
+                    </div>`
+                ).join('');
+            }
+        })
+        .catch(error => console.error('Error loading emergency contacts:', error));
+}
+
+// Enhanced sendData function with better error handling
+function sendData() {
+    const input = document.getElementById('inputBox').value;
+    const responseElement = document.getElementById('response');
+    
+    if (!input.trim()) {
+        responseElement.innerText = 'Please enter a message.';
+        responseElement.style.color = '#dc3545';
+        return;
+    }
+    
+    responseElement.innerText = 'Processing...';
+    responseElement.style.color = '#007bff';
+    
+    fetch('/api/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: input })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        responseElement.innerText = data.response || 'No response received.';
+        responseElement.style.color = '#28a745';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        responseElement.innerText = 'Sorry, there was an error processing your request. Please try again.';
+        responseElement.style.color = '#dc3545';
+    });
+}
+
+// Initialize additional features when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Load emergency contacts if on emergency page
+    if (document.getElementById('emergency-contacts')) {
+        loadEmergencyContacts();
+    }
+    
+    // Add event listeners for appointment scheduling buttons
+    const scheduleButtons = document.querySelectorAll('button[onclick*="Schedule"], button[onclick*="Book"]');
+    scheduleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const type = this.previousElementSibling ? this.previousElementSibling.textContent : 'General';
+            const date = prompt('Enter preferred date (YYYY-MM-DD):');
+            if (date) {
+                scheduleAppointment(type, date);
+            }
+        });
+    });
+    
+    // Add medical records container to the records section
+    const recordsSection = document.getElementById('records');
+    if (recordsSection) {
+        const recordsContainer = document.createElement('div');
+        recordsContainer.id = 'medical-records-list';
+        recordsContainer.style.marginTop = '20px';
+        const existingForm = recordsSection.querySelector('.appointment-form');
+        if (existingForm) {
+            existingForm.appendChild(recordsContainer);
+        }
+    }
+});</script>
 </html>
