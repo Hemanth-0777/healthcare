@@ -1,0 +1,6 @@
+healthcare_connect/
+├── server.js
+├── public/
+│   ├── index.html
+│   └── script.js
+└── package.json
